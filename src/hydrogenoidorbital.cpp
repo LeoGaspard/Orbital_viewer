@@ -49,7 +49,7 @@ double HydrogenoidOrbital::operator()(double x, double y, double z)
 	double dR = std::sqrt(x*x + y*y + z*z);
 	double dTheta = 0e0;
 	double dPhi = 0e0;
-    if(dR < std::numeric_limits<double>::epsilon())
+    	if(dR < std::numeric_limits<double>::epsilon())
 	{
 		dTheta = 0e0;
 	}
@@ -57,8 +57,8 @@ double HydrogenoidOrbital::operator()(double x, double y, double z)
 	{
 		dTheta = std::acos(z/dR);
 	}
-    dPhi = std::atan2(y,x);
-    double dRadialPart = std::pow(dR,m_iL)*std::exp(-dR/m_iN)*boost::math::laguerre(static_cast<unsigned int>(m_iN-m_iL-1), static_cast<unsigned int>(2*m_iL+1),2e0*dR/m_iN);
+    	dPhi = std::atan2(y,x);
+    	double dRadialPart = std::pow(dR,m_iL)*std::exp(-dR/m_iN)*boost::math::laguerre(static_cast<unsigned int>(m_iN-m_iL-1), static_cast<unsigned int>(2*m_iL+1),2e0*dR/m_iN);
 
 	return m_dRadialNormalizationConstant * dRadialPart * m_Ylm(dTheta,dPhi);
 }//operator()

@@ -345,7 +345,7 @@ void MarchingCube(Grid grid, double dIsovalue, std::vector<C3Vec> &Vertices, std
 
 
     for(unsigned int cx=0; cx < iNx; cx++)
-	{
+    {
         for(unsigned int cy=0; cy < iNy; cy++)
 		{
             for(unsigned int cz=0; cz < iNz; cz++)
@@ -383,13 +383,13 @@ void MarchingCube(Grid grid, double dIsovalue, std::vector<C3Vec> &Vertices, std
 						C3Vec r1 = positions[e1];
 						C3Vec r2 = positions[e2];
 
-						C3Vec v = interpolateVertices(r1, r2, v1, v2, dIsovalue);
+                        C3Vec v = interpolateVertices(r1, r2, v1, v2, dIsovalue);
 
-						Vertices.push_back(v);
-						Normals.push_back(C3Vec());
-						iVertList[a] = iNNewVertices;
-						iNNewVertices++;
-					}
+                        Vertices.push_back(v);
+                        Normals.push_back(C3Vec());
+                        iVertList[a] = iNNewVertices;
+                        iNNewVertices++;
+                    }
 					a++;
 				}
 				for(int v=0; triTable[index][v] != -1; v+=3)
@@ -398,27 +398,27 @@ void MarchingCube(Grid grid, double dIsovalue, std::vector<C3Vec> &Vertices, std
                     unsigned int t1 = iVertList[triTable[index][v+1]];
                     unsigned int t2 = iVertList[triTable[index][v+2]];
 
-					Triangles.push_back(t0+iNVertices);
-					Triangles.push_back(t1+iNVertices);
-					Triangles.push_back(t2+iNVertices);
+                    Triangles.push_back(t0+iNVertices);
+                    Triangles.push_back(t1+iNVertices);
+                    Triangles.push_back(t2+iNVertices);
 
 
 					// Computing the normal to the face
-					C3Vec r1 = Vertices[t0+iNVertices];
-					C3Vec r2 = Vertices[t1+iNVertices];
-					C3Vec r3 = Vertices[t2+iNVertices];
+                    C3Vec r1 = Vertices[t0+iNVertices];
+                    C3Vec r2 = Vertices[t1+iNVertices];
+                    C3Vec r3 = Vertices[t2+iNVertices];
 
 					C3Vec e1 = r2-r1;
 					C3Vec e2 = r3-r1;
 
 					C3Vec n = e1.Cross(e2);
 
-					Normals[t0+iNVertices] = n;
-					Normals[t1+iNVertices] = n;
-					Normals[t2+iNVertices] = n;
-				}
-				iNVertices += iNNewVertices;
-			}
+                    Normals[t0+iNVertices] = n;
+                    Normals[t1+iNVertices] = n;
+                    Normals[t2+iNVertices] = n;
+                }
+                iNVertices += iNNewVertices;
+            }
 		}
 	}
 }

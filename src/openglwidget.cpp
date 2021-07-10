@@ -9,7 +9,7 @@ void openglwidget::initializeGL()
 {
     connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &openglwidget::cleanup);
 
-    glClearColor(0.2f,0.3f,0.3f,1.0f);
+    glClearColor(0.356f,0.352f,0.352f,1.0f);
 
     m_ShaderPrograms.push_back(new QOpenGLShaderProgram);
     m_ShaderPrograms[0]->addShaderFromSourceFile(QOpenGLShader::Vertex,"shaders/shader.vs");
@@ -40,7 +40,30 @@ void openglwidget::paintGL()
     view.translate(QVector3D(0.0f,0.0f,-3.0f));
 
     QMatrix4x4 projection;
-    projection.perspective(90.0f, 4.0f/3.0f, 0.1f, 100.0f);
+   // projection.perspective(90.0f, 4.0f/3.0f, 0.1f, 100.0f);
+
+    float height = this->height();
+    float width = this->width();
+
+    float left, bottom, top, right;
+
+    if(width > height)
+    {
+        left = -(-3.0f - height/width);
+        right = -left;
+        bottom = -3.0f;
+        top = 3.0f;
+    }
+    else
+    {
+        left = -3.0f;
+        right = 3.0f;
+        bottom = -(3.0f - width/height);
+        top = -bottom;
+    }
+
+    projection.ortho(left, right, bottom, top, 0.5, 40);
+
 
     int modelLoc = m_ShaderPrograms[0]->uniformLocation("model");
     m_ShaderPrograms[0]->setUniformValue(modelLoc, model);

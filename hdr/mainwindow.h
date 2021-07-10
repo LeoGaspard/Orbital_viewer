@@ -18,8 +18,11 @@ public:
 private slots:
     void on_reload_pushbutton_clicked();
 
+    void on_probSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 };
+
 
 #endif // MAINWINDOW_H

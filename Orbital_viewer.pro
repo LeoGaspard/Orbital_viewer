@@ -43,7 +43,8 @@ HEADERS += \
     hdr/marchingcube.hpp \
     hdr/sphericalharmonic.hpp \
     hdr/surface.hpp \
-    hdr/openglwidget.h
+    hdr/openglwidget.h \
+    hdr/utils.hpp
 
 FORMS += \
     uis/mainwindow.ui
@@ -52,3 +53,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    SyNet.qss

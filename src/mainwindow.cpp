@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QMessageBox>
+#include <QShortcut>
 
 #include <fstream>
 
@@ -10,6 +11,7 @@
 #include "hdr/C3Vec.hpp"
 #include "hdr/grid.hpp"
 #include "hdr/marchingcube.hpp"
+#include "hdr/utils.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,13 +33,16 @@ void MainWindow::on_reload_pushbutton_clicked()
    unsigned int divX = static_cast<unsigned int>(this->ui->xdiv_spinbox->value());
    unsigned int divY = static_cast<unsigned int>(this->ui->ydiv_spinbox->value());
    unsigned int divZ = static_cast<unsigned int>(this->ui->zdiv_spinbox->value());
-   double xMin = this->ui->xmin_spinbox->value();
-   double xMax = this->ui->xmax_spinbox->value();
-   double yMin = this->ui->ymin_spinbox->value();
-   double yMax = this->ui->ymax_spinbox->value();
-   double zMin = this->ui->zmin_spinbox->value();
-   double zMax = this->ui->zmax_spinbox->value();
-   double isovalue = this->ui->isovalue_spinbox->value();
+   double probability = this->ui->probSlider->value()/100.0;
+   double isovalue(0.0);
+
+   // Magic number
+   double xMax = 3*n*n;
+   double yMax = xMax;
+   double zMax = xMax;
+   double xMin = -xMax;
+   double yMin = -yMax;
+   double zMin = -zMax;
 
    bool draw = true;
 
@@ -57,18 +62,14 @@ void MainWindow::on_reload_pushbutton_clicked()
    }
    if(draw)
    {
-       qDebug() << n << " " << l << " " << m;
-       qDebug() << divX << " " << divY << " " << divZ;
-       qDebug() << xMin << " " << xMax;
-       qDebug() << yMin << " " << yMax;
-       qDebug() << zMin << " " << zMax;
-       qDebug() << isovalue;
-
        HydrogenoidOrbital orb(n,l,m);
        Grid Positive_Grid(divX, divY, divZ, xMin,xMax, yMin, yMax, zMin, zMax);
        Grid Negative_Grid(divX, divY, divZ, xMin,xMax, yMin, yMax, zMin, zMax);
 
-       double MaxVal(0.0);
+       double integral(0.0);
+       double dX((xMax-xMin)/divX), dY((yMax-yMin)/divY), dZ((zMax-zMin)/divZ);
+
+       std::vector<std::vector<double>> dVals;
 
        for(unsigned int i=0; i<divX; i++)
        {
@@ -87,9 +88,17 @@ void MainWindow::on_reload_pushbutton_clicked()
                    {
                        Positive_Grid.setValue(i,j,k,dValue2);
                    }
-                   MaxVal = (dValue2>MaxVal) ? dValue2 : MaxVal;
+                   double R = std::sqrt(pos.GetX()*pos.GetX() + pos.GetY()*pos.GetY() + pos.GetZ()*pos.GetZ());
+                   dVals.push_back(std::vector<double>{R, dValue2});
                }
            }
+       }
+
+       std::sort(dVals.begin(), dVals.end(),sortcol);
+       for(unsigned int i=0; i<dVals.size() && integral < probability; i++)
+       {
+           integral += dVals[i][1]*dX*dY*dZ;
+           isovalue = dVals[i][1];
        }
        std::vector<Surface>			s;
 
@@ -97,14 +106,16 @@ void MainWindow::on_reload_pushbutton_clicked()
        std::vector<C3Vec> 			Normals;
        std::vector<unsigned int>	Triangles;
 
-       MarchingCube(Positive_Grid, isovalue*MaxVal, Vertices, Triangles, Normals);
+       MarchingCube(Positive_Grid, isovalue, Vertices, Triangles, Normals);
        s.push_back(Surface(Vertices, Normals, Triangles, C3Vec(0.0,0.0,1.0)));
-       MarchingCube(Negative_Grid, isovalue*MaxVal, Vertices, Triangles, Normals);
+       MarchingCube(Negative_Grid, isovalue, Vertices, Triangles, Normals);
        s.push_back(Surface(Vertices, Normals, Triangles, C3Vec(1.0,0.0,0.0)));
-
-       qDebug() << "Computed the surfaces";
-
        this->ui->openGLWidget->draw_surfaces(s);
    }
 }
 
+
+void MainWindow::on_probSlider_valueChanged(int value)
+{
+   this->ui->probLabel->setText(QString::number(value)+"%");
+}

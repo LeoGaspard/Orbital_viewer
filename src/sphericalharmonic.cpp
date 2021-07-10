@@ -31,11 +31,11 @@ double SphericalHarmonic::operator()(double theta, double phi)
 
 	if(m_iM < 0)
 	{
-		dValue *= 2e0/boost::math::constants::root_two<double>() * std::sin(m_iM*phi);
+		dValue *= boost::math::constants::root_two<double>() * std::sin(std::abs(m_iM)*phi);
 	}
 	else if(m_iM > 0)
 	{
-		dValue *= 2e0/boost::math::constants::root_two<double>() * std::cos(m_iM*phi);
+		dValue *= boost::math::constants::root_two<double>() * std::cos(m_iM*phi);
 	}
 
 	return dValue;
